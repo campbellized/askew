@@ -8,6 +8,7 @@ Usage
 
 from bs4 import BeautifulSoup
 
+import imgscii
 import requests
 import re
 
@@ -18,6 +19,46 @@ def main():
     """This is a placeholder.
     """
 
+    while True:
+        img_list = new_query()
+        file_nav = retrieve_images(img_list)
+
+        idx = 0
+
+        while True:
+            print(file_nav[idx])
+            action = input("[N] Next | [P] Previous | [Q] Query | [X] Exit\n")
+            action = action.lower()
+
+            if action == "n":
+                idx = file_nav_increment(file_nav, idx)
+            elif action == "p":
+                idx = file_nav_decrement(file_nav, idx)
+            elif action == "q":
+                break
+            elif action == "x":
+                print("Bye bye.")
+                exit()
+            else:
+                print("'" + action + "' is not a valid command.")
+
+def file_nav_increment(nav, index):
+    index += 1
+
+    if index > len(nav) - 1:
+        return 0
+    else:
+        return index
+
+def file_nav_decrement(nav, index):
+    index -= 1
+
+    if index < 0:
+        return len(nav) - 1
+    else:
+        return index
+
+def new_query():
     # while True:
     #     query = input("What is your query?\n")
     #
@@ -29,29 +70,34 @@ def main():
     # query = filter_input(query)
     # url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
     url = "http://www.campbellized.com/"
-    print(url)
-    r = requests.get(url)
-    data = r.text
+
+    response = requests.get(url)
+    data = response.text
 
     soup = BeautifulSoup(data, "html.parser")
 
-    img_list = soup.select("#downloads img")
-    log = ""
+    return soup.select("#downloads img")
 
-    for img in img_list[:11]:
+
+def retrieve_images(images):
+    """This is a placeholder.
+    """
+
+    # List of files retrieved from query
+    files = []
+
+    for img in images[:11]:
         img_src = img.get("src")
-        log += img_src + "\n"
         res = requests.get(img_src, stream=True)
         file_name = img_src.split("/")[-1]
+        files.append(file_name)
 
         if res.status_code == 200:
             print("success")
             with open(DATA_PATH + file_name, 'wb') as file:
                 file.write(res.content)
 
-    with open(DATA_PATH + "src.txt", "w") as text_file:
-        text_file.write(log)
-
+    return files
 
 def filter_input(query):
     """Takes a string and prepares it to be used in a web query
