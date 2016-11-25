@@ -1,4 +1,4 @@
-images/
+tmp/
 .idea
 .tox
 .pylint.d
