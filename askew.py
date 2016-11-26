@@ -6,15 +6,11 @@ Usage
     $ python askew.py
 """
 
-import re
-import shutil
-import os
-import errno
+import re, shutil, errno, os
 from os import path
 
 from bs4 import BeautifulSoup
-import imgscii
-import requests
+import imgscii, requests
 
 TEMP_PATH = "tmp" + path.sep
 
@@ -169,6 +165,7 @@ def create_temp(path):
     except OSError as exc:
         if exc.errno != errno.EEXIST:
             raise
+
 
 def filter_input(query):
     """Takes a string and prepares it to be used in a web query
