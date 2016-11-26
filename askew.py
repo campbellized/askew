@@ -30,19 +30,23 @@ def main():
             action = input("[N] Next | [P] Previous | [Q] Query | [X] Exit\n")
             action = action.lower()
 
-            if action == "n":
+            if action == "n" or action == "next":
                 idx = file_nav_increment(file_nav, idx)
-            elif action == "p":
+            elif action == "p" or action == "previous" or action == "prev":
                 idx = file_nav_decrement(file_nav, idx)
-            elif action == "q":
+            elif action == "q" or action == "query":
                 break
-            elif action == "x":
+            elif action == "x" or action == "exit":
                 print("Bye bye.")
                 exit()
             else:
                 print("'" + action + "' is not a valid command.")
 
+
 def file_nav_increment(nav, index):
+    """Increment the file index by 1, accounting for rollover.
+    """
+
     index += 1
 
     if index > len(nav) - 1:
@@ -50,7 +54,11 @@ def file_nav_increment(nav, index):
     else:
         return index
 
+
 def file_nav_decrement(nav, index):
+    """Decrement the file index by 1, accounting for rollover.
+    """
+
     index -= 1
 
     if index < 0:
@@ -58,7 +66,11 @@ def file_nav_decrement(nav, index):
     else:
         return index
 
+
 def new_query():
+    """This is a placeholder.
+    """
+
     # while True:
     #     query = input("What is your query?\n")
     #
@@ -98,6 +110,7 @@ def retrieve_images(images):
                 file.write(res.content)
 
     return files
+
 
 def filter_input(query):
     """Takes a string and prepares it to be used in a web query
