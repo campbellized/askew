@@ -160,7 +160,7 @@ def filter_input(query):
     string
     """
 
-    return re.sub("\s+", "+", query)
+    return re.sub(r"\s+", "+", query)
 
 
 if __name__ == "__main__":
