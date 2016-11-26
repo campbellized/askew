@@ -8,18 +8,21 @@ Usage
 
 import re
 import shutil
+import os
+import errno
 from os import path
 
 from bs4 import BeautifulSoup
 import imgscii
 import requests
 
-DATA_PATH = "tmp" + path.sep
+TEMP_PATH = "tmp" + path.sep
 
 
 def main():
     """Retrieve images based upon user queries and view them as ASCII art."""
 
+    create_temp(TEMP_PATH)
     while True:
         img_list = new_query()
         images = retrieve_images(img_list)
@@ -39,7 +42,7 @@ def main():
                 break
             elif action == "x" or action == "exit":
                 print("Bye bye.")
-                purge_data()
+                purge_temp(TEMP_PATH)
                 exit()
             else:
                 print("'" + action + "' is not a valid command.")
@@ -144,7 +147,7 @@ def retrieve_images(images):
 
         if res.status_code == 200:
             print("success")
-            with open(DATA_PATH + file_name, 'wb') as file:
+            with open(TEMP_PATH + file_name, 'wb') as file:
                 file.write(res.content)
         else:
             print("Response code: " + res.status_code + ". There was a problem downloading the image.")
@@ -152,11 +155,20 @@ def retrieve_images(images):
     return files
 
 
-def purge_data():
+def purge_temp(path):
     """Delete any temporary files."""
 
-    shutil.rmtree(DATA_PATH)
+    shutil.rmtree(path)
 
+
+def create_temp(path):
+    """Create the temp directory if it does not exist."""
+
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno != errno.EEXIST:
+            raise
 
 def filter_input(query):
     """Takes a string and prepares it to be used in a web query
