@@ -7,6 +7,7 @@ Usage
 """
 
 import re
+import shutil
 from os import path
 
 from bs4 import BeautifulSoup
@@ -38,6 +39,7 @@ def main():
                 break
             elif action == "x" or action == "exit":
                 print("Bye bye.")
+                purge_data()
                 exit()
             else:
                 print("'" + action + "' is not a valid command.")
@@ -144,8 +146,16 @@ def retrieve_images(images):
             print("success")
             with open(DATA_PATH + file_name, 'wb') as file:
                 file.write(res.content)
+        else:
+            print("Response code: " + res.status_code + ". There was a problem downloading the image.")
 
     return files
+
+
+def purge_data():
+    """Delete any temporary files."""
+
+    shutil.rmtree(DATA_PATH)
 
 
 def filter_input(query):
