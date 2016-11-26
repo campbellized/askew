@@ -6,12 +6,12 @@ Usage
     $ python askew.py
 """
 
-from bs4 import BeautifulSoup
-
-import imgscii
-import requests
 import re
 from os import path
+
+from bs4 import BeautifulSoup
+import imgscii
+import requests
 
 DATA_PATH = "tmp" + path.sep
 
