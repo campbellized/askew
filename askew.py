@@ -11,8 +11,9 @@ from bs4 import BeautifulSoup
 import imgscii
 import requests
 import re
+from os import path
 
-DATA_PATH = "tmp/"
+DATA_PATH = "tmp" + path.sep
 
 
 def main():
