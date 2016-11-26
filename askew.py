@@ -16,24 +16,23 @@ DATA_PATH = "tmp/"
 
 
 def main():
-    """This is a placeholder.
-    """
+    """Retrieve images based upon user queries and view them as ASCII art."""
 
     while True:
         img_list = new_query()
-        file_nav = retrieve_images(img_list)
+        images = retrieve_images(img_list)
 
         idx = 0
 
         while True:
-            print(file_nav[idx])
+            print(images[idx])
             action = input("[N] Next | [P] Previous | [Q] Query | [X] Exit\n")
             action = action.lower()
 
             if action == "n" or action == "next":
-                idx = file_nav_increment(file_nav, idx)
+                idx = file_increment(images, idx)
             elif action == "p" or action == "previous" or action == "prev":
-                idx = file_nav_decrement(file_nav, idx)
+                idx = file_decrement(images, idx)
             elif action == "q" or action == "query":
                 break
             elif action == "x" or action == "exit":
@@ -43,32 +42,60 @@ def main():
                 print("'" + action + "' is not a valid command.")
 
 
-def file_nav_increment(nav, index):
+def file_increment(file_list, index):
     """Increment the file index by 1, accounting for rollover.
+
+    Parameters
+    ---
+    file_list: list
+    index: int
+
+    Returns
+    ---
+    int
     """
 
     index += 1
 
-    if index > len(nav) - 1:
+    if index > len(file_list) - 1:
         return 0
     else:
         return index
 
 
-def file_nav_decrement(nav, index):
+def file_decrement(file_list, index):
     """Decrement the file index by 1, accounting for rollover.
+
+    Parameters
+    ---
+    file_list: list
+    index: int
+
+    Returns
+    ---
+    int
     """
 
     index -= 1
 
     if index < 0:
-        return len(nav) - 1
+        return len(file_list) - 1
     else:
         return index
 
 
 def new_query():
-    """This is a placeholder.
+    """Get a search term from the user and parse the site for images based on
+    the user's query.
+
+    Parameters
+    ---
+    None
+
+    Returns
+    ---
+    object
+        A BeautifulSoup object
     """
 
     # while True:
@@ -92,10 +119,18 @@ def new_query():
 
 
 def retrieve_images(images):
-    """This is a placeholder.
+    """Download a list of images to the temp directory to be viewed
+
+    Parameters
+    ---
+    images: object
+
+    Returns
+    ---
+    files: list
     """
 
-    # List of files retrieved from query
+    # List of file names retrieved from query
     files = []
 
     for img in images[:11]:
@@ -114,6 +149,14 @@ def retrieve_images(images):
 
 def filter_input(query):
     """Takes a string and prepares it to be used in a web query
+
+    Parameters
+    ---
+    query: string
+
+    Returns
+    ---
+    string
     """
 
     return re.sub("\s+", "+", query)
