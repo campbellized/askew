@@ -15,6 +15,7 @@ import imgscii, requests
 TEMP_PATH = "tmp" + path.sep
 
 
+
 def main():
     """Retrieve images based upon user queries and view them as ASCII art."""
 
@@ -26,7 +27,7 @@ def main():
         idx = 0
 
         while True:
-            print(images[idx])
+            imgscii.printscii(TEMP_PATH + images[idx])
             action = input("[N] Next | [P] Previous | [Q] Query | [X] Exit\n")
             action = action.lower()
 
@@ -117,6 +118,7 @@ def new_query():
 
     soup = BeautifulSoup(data, "html.parser")
 
+    # return soup.select("#browse-results img")
     return soup.select("#downloads img")
 
 
@@ -135,14 +137,13 @@ def retrieve_images(images):
     # List of file names retrieved from query
     files = []
 
-    for img in images[:11]:
+    for img in images[:6]:
         img_src = img.get("src")
-        res = requests.get(img_src, stream=True)
+        res = requests.get(img_src)
         file_name = img_src.split("/")[-1]
         files.append(file_name)
 
         if res.status_code == 200:
-            print("success")
             with open(TEMP_PATH + file_name, 'wb') as file:
                 file.write(res.content)
         else:
