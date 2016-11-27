@@ -6,14 +6,17 @@ Usage
     $ python askew.py
 """
 
-import re, shutil, errno, os
+import re
+import shutil
+import errno
+import os
 from os import path
 
 from bs4 import BeautifulSoup
-import imgscii, requests
+import imgscii
+import requests
 
 TEMP_PATH = "tmp" + path.sep
-
 
 
 def main():
@@ -23,6 +26,10 @@ def main():
     while True:
         img_list = new_query()
         images = retrieve_images(img_list)
+
+        if len(images) == 0:
+            print("Parser found no imgs. Check your selector and try again.")
+            exit()
 
         idx = 0
 
@@ -101,25 +108,25 @@ def new_query():
         A BeautifulSoup object
     """
 
-    # while True:
-    #     query = input("What is your query?\n")
-    #
-    #     if str(query):
-    #         break
-    #     else:
-    #         print("Please enter a valid string")
-    #
-    # query = filter_input(query)
-    # url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
-    url = "http://www.campbellized.com/"
+    while True:
+        query = input("What is your query?\n")
+
+        if str(query):
+            break
+        else:
+            print("Please enter a valid string")
+
+    query = filter_input(query)
+    url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
+    # url = "http://www.campbellized.com/"
 
     response = requests.get(url)
     data = response.text
 
     soup = BeautifulSoup(data, "html.parser")
 
-    # return soup.select("#browse-results img")
-    return soup.select("#downloads img")
+    # return soup.select("#downloads img")
+    return soup.select("#browse-results .torpedo-thumb-link > img")
 
 
 def retrieve_images(images):
@@ -147,22 +154,24 @@ def retrieve_images(images):
             with open(TEMP_PATH + file_name, 'wb') as file:
                 file.write(res.content)
         else:
-            print("Response code: " + res.status_code + ". There was a problem downloading the image.")
+            print("Response code: " +
+                  res.status_code +
+                  ". There was a problem downloading the image.")
 
     return files
 
 
-def purge_temp(path):
+def purge_temp(directory):
     """Delete any temporary files."""
 
-    shutil.rmtree(path)
+    shutil.rmtree(directory)
 
 
-def create_temp(path):
+def create_temp(directory):
     """Create the temp directory if it does not exist."""
 
     try:
-        os.makedirs(path)
+        os.makedirs(directory)
     except OSError as exc:
         if exc.errno != errno.EEXIST:
             raise
