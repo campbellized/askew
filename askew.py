@@ -42,9 +42,9 @@ def main():
             action = action.lower()
 
             if action == "n" or action == "next":
-                idx = file_increment(images, idx)
+                idx = update_list_index(images, idx, 1) # Next item in list
             elif action == "p" or action == "previous" or action == "prev":
-                idx = file_decrement(images, idx)
+                idx = update_list_index(images, idx, -1) # Prev item in list
             elif action == "q" or action == "query":
                 break
             elif action == "x" or action == "exit":
@@ -53,48 +53,25 @@ def main():
                 exit()
             else:
                 print("'" + action + "' is not a valid command.")
+            print(idx)
 
 
-def file_increment(file_list, index):
-    """Increment the file index by 1, accounting for rollover.
-
-    Parameters
-    ---
-    file_list: list
-    index: int
-
-    Returns
-    ---
-    int
-    """
-
-    index += 1
-
-    if index > len(file_list) - 1:
-        return 0
-    else:
-        return index
-
-
-def file_decrement(file_list, index):
-    """Decrement the file index by 1, accounting for rollover.
+def update_list_index(file_list, index, amount):
+    """Increment the file index by a specified amount, accounting for rollover.
 
     Parameters
     ---
     file_list: list
     index: int
+    amount: int
 
     Returns
     ---
     int
     """
-
-    index -= 1
-
-    if index < 0:
-        return len(file_list) - 1
-    else:
-        return index
+    print("{} + {} = {}".format(index, amount, (index + amount)))
+    index += amount
+    return index % len(file_list)
 
 
 def new_query():
@@ -121,7 +98,6 @@ def new_query():
 
     query = filter_input(query)
     url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
-
     response = requests.get(url)
     data = response.text
 
