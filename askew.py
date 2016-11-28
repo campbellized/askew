@@ -22,18 +22,21 @@ TEMP_PATH = "tmp" + path.sep
 def main():
     """Retrieve images based upon user queries and view them as ASCII art."""
 
-    create_temp(TEMP_PATH)
+    create_temp(TEMP_PATH) # Directory where Images are temporarily saved.
+
     while True:
+        # Define search term and get the results of that search
         img_list = new_query()
         images = retrieve_images(img_list)
 
         if len(images) == 0:
-            print("Parser found no imgs. Check your selector and try again.")
-            exit()
+            print("No images were found.")
+            continue
 
         idx = 0
 
         while True:
+            # Print ASCII and prompt user for action
             imgscii.printscii(TEMP_PATH + images[idx])
             action = input("[N] Next | [P] Previous | [Q] Query | [X] Exit\n")
             action = action.lower()
@@ -118,14 +121,12 @@ def new_query():
 
     query = filter_input(query)
     url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
-    # url = "http://www.campbellized.com/"
 
     response = requests.get(url)
     data = response.text
 
     soup = BeautifulSoup(data, "html.parser")
 
-    # return soup.select("#downloads img")
     return soup.select("#browse-results .torpedo-thumb-link > img")
 
 
@@ -156,7 +157,7 @@ def retrieve_images(images):
         else:
             print("Response code: " +
                   res.status_code +
-                  ". There was a problem downloading the image.")
+                  " - There was a problem downloading the image.")
 
     return files
 
