@@ -11,40 +11,65 @@ import shutil
 import errno
 import os
 from os import path
+from time import time
 
 from bs4 import BeautifulSoup
 import imgscii
 import requests
 
 TEMP_PATH = "tmp" + path.sep
+COOLDOWN = 10  # Seconds allowed before a user can submit a new query
 
 
 def main():
     """Retrieve images based upon user queries and view them as ASCII art."""
 
-    create_temp(TEMP_PATH) # Directory where Images are temporarily saved.
+    create_temp(TEMP_PATH)  # Directory where Images are temporarily saved.
+    cooldown_warn = False  # Warn the user if they need to wait between queries
+    prev_query_time = 0.0  # Make sure the user isn't warned during first query
 
     while True:
-        # Define search term and get the results of that search
-        img_list = new_query()
-        images = retrieve_images(img_list)
+        query_time_diff = time() - prev_query_time
 
-        if len(images) == 0:
-            print("No images were found.")
-            continue
+        if query_time_diff < 10:
+            cooldown_warn = True
+        else:
+            # Define search term and get the results of that search
+            img_list = new_query()
+            images = retrieve_images(img_list)
 
-        idx = 0
+            prev_query_time = time()
+            cooldown_warn = False
+
+            if len(images) == 0:
+                print("No images were found.")
+                continue
+
+            idx = 0
 
         while True:
-            # Print ASCII and prompt user for action
-            imgscii.printscii(TEMP_PATH + images[idx])
+            if cooldown_warn:
+                print("You need to wait {} seconds between queries. "
+                      "({} seconds left)\n You can still view images from the "
+                      "current query by typing "
+                      "[N] or [P].".format(COOLDOWN,
+                                           round(COOLDOWN - query_time_diff, 1)
+                                          )
+                     )
+            else:
+                imgscii.printscii(TEMP_PATH + images[idx])
+                print("Viewing image {} of {}".format(idx + 1, len(images)))
+
             action = input("[N] Next | [P] Previous | [Q] Query | [X] Exit\n")
             action = action.lower()
 
+            # Print ASCII and prompt user for action
             if action == "n" or action == "next":
-                idx = update_list_index(images, idx, 1) # Next item in list
+                idx = update_list_index(images, idx, 1)  # Next item in list
+                cooldown_warn = False  # User has already been warned
             elif action == "p" or action == "previous" or action == "prev":
-                idx = update_list_index(images, idx, -1) # Prev item in list
+                idx = update_list_index(images, idx, -1)  # Prev item in list
+                cooldown_warn = False  # User has already been warned
             elif action == "q" or action == "query":
                 break
             elif action == "x" or action == "exit":
@@ -53,7 +78,6 @@ def main():
                 exit()
             else:
                 print("'" + action + "' is not a valid command.")
-            print(idx)
 
 
 def update_list_index(file_list, index, amount):
@@ -69,7 +93,7 @@ def update_list_index(file_list, index, amount):
     ---
     int
     """
-    print("{} + {} = {}".format(index, amount, (index + amount)))
+
     index += amount
     return index % len(file_list)
 
@@ -96,14 +120,16 @@ def new_query():
         else:
             print("Please enter a valid string")
 
+    # Get the query string and parse the contents of the search results page
     query = filter_input(query)
     url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
+    # url = "http://www.campbellized.com"
     response = requests.get(url)
     data = response.text
-
     soup = BeautifulSoup(data, "html.parser")
 
     return soup.select("#browse-results .torpedo-thumb-link > img")
+    # return soup.select("#downloads img")
 
 
 def retrieve_images(images):
