@@ -19,6 +19,7 @@ import requests
 
 TEMP_PATH = "tmp" + path.sep
 COOLDOWN = 10  # Seconds allowed before a user can submit a new query
+QUERY_SIZE = 5  # The number of images returned from a query
 
 
 def main():
@@ -147,7 +148,7 @@ def retrieve_images(images):
     # List of file names retrieved from query
     files = []
 
-    for img in images[:6]:
+    for img in images[:QUERY_SIZE + 1]:
         img_src = img.get("src")
         res = requests.get(img_src)
         file_name = img_src.split("/")[-1]
