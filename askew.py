@@ -124,13 +124,11 @@ def new_query():
     # Get the query string and parse the contents of the search results page
     query = filter_input(query)
     url = "http://www.deviantart.com/browse/all/?section=&global=1&q=" + query
-    # url = "http://www.campbellized.com"
     response = requests.get(url)
     data = response.text
     soup = BeautifulSoup(data, "html.parser")
 
     return soup.select("#browse-results .torpedo-thumb-link > img")
-    # return soup.select("#downloads img")
 
 
 def retrieve_images(images):
