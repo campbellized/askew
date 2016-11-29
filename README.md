@@ -3,9 +3,11 @@ Askew is a command-line program that lets you view images from DeviantArt as ASC
 
 ## Requirements
 
-Askew uses Imgscii (another one of my projects) to render images into ASCII. You can install Imgscii using PIP:
+Askew requires [Imgscii](https://github.com/campbellized/imgscii) (another one of my projects) as well as a couple other packages. You can install them using PIP:
 ```
 pip install imgscii
+pip install beautifulsoup4
+pip install requests
 ```
 Please note, Askew has only been tested in Python 3.
 
