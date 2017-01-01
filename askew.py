@@ -146,7 +146,7 @@ def retrieve_images(images):
     # List of file names retrieved from query
     files = []
 
-    for img in images[:QUERY_SIZE + 1]:
+    for img in images[:QUERY_SIZE]:
         img_src = img.get("src")
         res = requests.get(img_src)
         file_name = img_src.split("/")[-1]
